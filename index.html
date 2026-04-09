@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Generator raportu</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #0f172a;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 15px;
+    width: 900px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #38bdf8;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+input {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background: #0f172a;
+    color: white;
+}
+
+input::placeholder {
+    color: #64748b;
+}
+
+.buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.generate {
+    background: #22c55e;
+}
+
+.copy {
+    background: #3b82f6;
+}
+
+button:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+pre {
+    margin-top: 20px;
+    background: #020617;
+    padding: 15px;
+    border-radius: 10px;
+    color: #22c55e;
+    font-size: 13px;
+    overflow-x: auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>🚔 Generator raportu</h2>
+
+<div class="grid">
+<input id="nick" placeholder="Nick">
+<input id="stopien" placeholder="Stopień">
+<input id="odznaka" placeholder="Nr odznaki">
+<input id="radio" placeholder="Radio (Tak/Nie)">
+<input id="taser" placeholder="Taser">
+<input id="powodTaser" placeholder="Powód tasera">
+<input id="bron" placeholder="Broń palna">
+<input id="powodBron" placeholder="Powód broni">
+<input id="kajdanki" placeholder="Kajdanki">
+<input id="powodKajdanki" placeholder="Powód kajdanek">
+<input id="partner" placeholder="Partner">
+<input id="pojazd" placeholder="Pojazd">
+<input id="godziny" placeholder="Godziny">
+<input id="zatrzymani" placeholder="Zatrzymani">
+<input id="dowod" placeholder="Powód">
+</div>
+
+<div class="buttons">
+<button class="generate" onclick="generuj()">Generuj</button>
+<button class="copy" onclick="kopiuj()">Kopiuj</button>
+</div>
+
+<pre id="output" rea></pre>
+</div>
+
+<script>
+function wrap(text, width) {
+    let result = [];
+    text = text || "";
+
+    while (text.length > width) {
+        result.push(text.substring(0, width));
+        text = text.substring(width);
+    }
+    result.push(text);
+    return result;
+}
+
+function linia(label, value, width = 42) {
+    let lines = wrap(value, width);
+    let out = [];
+
+    lines.forEach((line, i) => {
+        if (i === 0) {
+            let txt = (label + line).padEnd(width);
+            out.push(`│ ${txt} │`);
+        } else {
+            let txt = line.padEnd(width);
+            out.push(`│ ${txt} │`);
+        }
+    });
+
+    return out.join("\n");
+}
+
+function kopiuj() {
+    let tekst = document.getElementById("output").textContent;
+    let discordFormat = "```\n" + tekst + "\n```";
+
+    navigator.clipboard.writeText(discordFormat)
+        .then(() => alert("Skopiowane 👍"));
+}
+
+function generuj() {
+    let data = new Date().toLocaleDateString("pl-PL");
+
+    let raport =
+`┌────────────────────────────────────────────┐
+│ RAPORT Z SŁUŻBY – ${data.padEnd(24)} │
+├────────────────────────────────────────────┤
+${linia("Nick: ", nick.value)}
+${linia("Stopień: ", stopien.value)}
+${linia("Nr odznaki: ", odznaka.value)}
+${linia("Radio (DC): ", radio.value)}
+${linia("Taser: ", taser.value)}
+${linia("Powód tasera: ", powodTaser.value)}
+${linia("Broń palna: ", bron.value)}
+${linia("Powód broni: ", powodBron.value)}
+${linia("Kajdanki: ", kajdanki.value)}
+${linia("Powód kajdanek: ", powodKajdanki.value)}
+${linia("Partner: ", partner.value)}
+${linia("Pojazd: ", pojazd.value)}
+${linia("Godziny: ", godziny.value)}
+${linia("Zatrzymani: ", zatrzymani.value)}
+${linia("Powód: ", dowod.value)}
+└────────────────────────────────────────────┘`;
+
+    document.getElementById("output").textContent = raport;
+}
+</script>
+
+</body>
+</html>
