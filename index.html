@@ -2,6 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
 <title>Generator raportu</title>
 
 <style>
@@ -156,7 +157,7 @@ function kopiuj() {
     let discordFormat = "```\n" + tekst + "\n```";
 
     navigator.clipboard.writeText(discordFormat)
-        .then(() => alert("Skopiowane 👍"));
+        .then(() => alert("Skopiowano do schowka"));
 }
 
 function generuj() {
