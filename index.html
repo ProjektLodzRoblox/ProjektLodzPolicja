@@ -87,6 +87,7 @@ pre {
     color: #22c55e;
     font-size: 13px;
     overflow-x: auto;
+    display: none;
 }
 </style>
 </head>
@@ -119,7 +120,7 @@ pre {
 <button class="copy" onclick="kopiuj()">Kopiuj</button>
 </div>
 
-<pre id="output" rea></pre>
+<canvas id="canvas"></canvas>
 </div>
 
 <script>
@@ -161,30 +162,109 @@ function kopiuj() {
 }
 
 function generuj() {
-    let data = new Date().toLocaleDateString("pl-PL");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
 
-    let raport =
-`┌────────────────────────────────────────────┐
-│ RAPORT Z SŁUŻBY – ${data.padEnd(24)} │
-├────────────────────────────────────────────┤
-${linia("Nick: ", nick.value)}
-${linia("Stopień: ", stopien.value)}
-${linia("Nr odznaki: ", odznaka.value)}
-${linia("Radio (DC): ", radio.value)}
-${linia("Taser: ", taser.value)}
-${linia("Powód tasera: ", powodTaser.value)}
-${linia("Broń palna: ", bron.value)}
-${linia("Powód broni: ", powodBron.value)}
-${linia("Kajdanki: ", kajdanki.value)}
-${linia("Powód kajdanek: ", powodKajdanki.value)}
-${linia("Partner: ", partner.value)}
-${linia("Pojazd: ", pojazd.value)}
-${linia("Godziny: ", godziny.value)}
-${linia("Zatrzymani: ", zatrzymani.value)}
-${linia("Powód: ", dowod.value)}
-└────────────────────────────────────────────┘`;
+    const width = 900;
+    const height = 550;
 
-    document.getElementById("output").textContent = raport;
+    canvas.width = width;
+    canvas.height = height;
+
+    // tło
+    ctx.fillStyle = "#0b1220";
+    ctx.fillRect(0, 0, width, height);
+
+    // header
+    ctx.fillStyle = "#111827";
+    roundRect(ctx, 20, 20, width - 40, 70, 12, true);
+
+    ctx.fillStyle = "#38bdf8";
+    ctx.font = "bold 26px Segoe UI";
+    ctx.fillText("🚔 RAPORT SŁUŻBY", 40, 65);
+
+    ctx.fillStyle = "#9ca3af";
+    ctx.font = "14px Segoe UI";
+    ctx.fillText(new Date().toLocaleDateString("pl-PL"), width - 150, 65);
+
+    // kolumny
+    drawSection("FUNKCJONARIUSZ", 20, 110, 420, [
+        ["Nick", nick.value],
+        ["Stopień", stopien.value],
+        ["Nr odznaki", odznaka.value],
+        ["Partner", partner.value]
+    ]);
+
+    drawSection("UŻYCIE", 460, 110, 420, [
+        ["Radio", radio.value],
+        ["Taser", taser.value],
+        ["Broń palna", bron.value],
+        ["Kajdanki", kajdanki.value]
+    ]);
+
+    drawSection("SZCZEGÓŁY", 20, 280, 860, [
+        ["Powód tasera", powodTaser.value],
+        ["Powód broni", powodBron.value],
+        ["Powód kajdanek", powodKajdanki.value]
+    ]);
+
+    drawSection("PODSUMOWANIE", 20, 400, 860, [
+        ["Godziny", godziny.value],
+        ["Zatrzymani", zatrzymani.value],
+        ["Powód", dowod.value]
+    ]);
+
+    function drawSection(title, x, y, w, fields) {
+        // box
+        ctx.fillStyle = "#111827";
+        roundRect(ctx, x, y, w, 140, 10, true);
+
+        // title
+        ctx.fillStyle = "#38bdf8";
+        ctx.font = "bold 14px Segoe UI";
+        ctx.fillText(title, x + 15, y + 25);
+
+        // divider
+        ctx.fillStyle = "#1f2937";
+        ctx.fillRect(x + 15, y + 35, w - 30, 1);
+
+        let offsetY = y + 60;
+
+        fields.forEach(f => {
+            ctx.fillStyle = "#9ca3af";
+            ctx.font = "12px Segoe UI";
+            ctx.fillText(f[0], x + 15, offsetY);
+
+            ctx.fillStyle = getColor(f[1]);
+            ctx.font = "13px Consolas";
+            ctx.fillText(f[1] || "-", x + 150, offsetY);
+
+            offsetY += 25;
+        });
+    }
+
+    function getColor(v) {
+        if (!v) return "#6b7280";
+        v = v.toLowerCase();
+        if (v === "tak") return "#22c55e";
+        if (v === "nie") return "#ef4444";
+        return "#e5e7eb";
+    }
+}
+
+function roundRect(ctx, x, y, w, h, r, fill) {
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.lineTo(x+w-r,y);
+    ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r);
+    ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    ctx.lineTo(x+r,y+h);
+    ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+    ctx.lineTo(x,y+r);
+    ctx.quadraticCurveTo(x,y,x+r,y);
+    ctx.closePath();
+    if(fill) ctx.fill();
 }
 </script>
 
