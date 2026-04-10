@@ -253,20 +253,12 @@ function generuj() {
             ctx.font = "12px Segoe UI";
             ctx.fillText(f[0], x + 15, offsetY);
 
-            ctx.fillStyle = getColor(f[1]);
-            ctx.font = "13px Consolas";
+            ctx.fillStyle = "#e5e7eb";
+            ctx.font = "12px Consolas";
             ctx.fillText(f[1] || "-", x + 150, offsetY);
 
             offsetY += 25;
         });
-    }
-
-    function getColor(v) {
-        if (!v) return "#6b7280";
-        v = v.toLowerCase();
-        if (v === "tak") return "#22c55e";
-        if (v === "nie") return "#ef4444";
-        return "#e5e7eb";
     }
 }
 
