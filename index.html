@@ -100,8 +100,8 @@ pre {
 <div class="grid">
 <input id="nick" placeholder="Nick">
 <input id="stopien" placeholder="Stopień">
-<input id="odznaka" placeholder="Nr odznaki">
-<input id="radio" placeholder="Radio (Tak/Nie)">
+<input id="odznaka" placeholder="Nr odznaki" maxlength="5">
+<input id="radio" placeholder="Radio (DC)">
 <input id="taser" placeholder="Taser">
 <input id="powodTaser" placeholder="Powód tasera">
 <input id="bron" placeholder="Broń palna">
@@ -111,8 +111,9 @@ pre {
 <input id="partner" placeholder="Partner">
 <input id="pojazd" placeholder="Pojazd">
 <input id="godziny" placeholder="Godziny">
-<input id="zatrzymani" placeholder="Zatrzymani">
-<input id="dowod" placeholder="Powód">
+<input id="zatrzymani" placeholder="Zatrzymani" maxlength="10">
+<input id="dowod" placeholder="Dowód w postaci ss (TAK/NIE)">
+<input id="uwagi" placeholder="Uwagi (jeśli nie ma zostaw puste)">
 </div>
 
 <div class="buttons">
@@ -229,7 +230,8 @@ function generuj() {
     drawSection("PODSUMOWANIE", 20, 400, 860, [
         ["Godziny", godziny.value],
         ["Zatrzymani", zatrzymani.value],
-        ["Powód", dowod.value]
+        ["Dowód (w postaci ss)", dowod.value],
+        ["Uwagi", uwagi.value]
     ]);
 
     function drawSection(title, x, y, w, fields) {
