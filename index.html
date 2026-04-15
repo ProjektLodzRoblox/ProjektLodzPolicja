@@ -130,30 +130,7 @@ text-align:center;
   <p>Strona wróci za:</p>
   <h2 id="timer"></h2>
 </div>
-<input id="nick" placeholder="Nick">
-<input id="stopien" placeholder="Stopień">
-<input id="odznaka" placeholder="Nr odznaki" maxlength="5">
-<input id="radio" placeholder="Radio (DC)">
-<input id="taser" placeholder="Taser">
-<input id="powodTaser" placeholder="Powód tasera">
-<input id="bron" placeholder="Broń palna">
-<input id="powodBron" placeholder="Powód broni">
-<input id="kajdanki" placeholder="Kajdanki">
-<input id="powodKajdanki" placeholder="Powód kajdanek">
-<input id="partner" placeholder="Partner">
-<input id="pojazd" placeholder="Pojazd">
-<input id="godziny" placeholder="Godziny">
-<input id="zatrzymani" placeholder="Zatrzymani" maxlength="10">
-<input id="dowod" placeholder="Dowód w postaci ss (TAK/NIE)">
-<input id="uwagi" placeholder="Uwagi (jeśli nie ma zostaw puste)">
 </div>
-
-<div class="buttons">
-<button class="generate" onclick="generuj()">Generuj</button>
-<button class="copy" onclick="kopiuj()">Kopiuj</button>
-</div>
-
-<canvas id="canvas" style="display: none;"></canvas>
 </div>
 
 <script>
@@ -179,6 +156,7 @@ function updateMaintenance() {
 
   } else {
     maintenanceDiv.style.display = "none";
+    alert("Informuję że w dniu 16.04.2026r. strona będzie niedostępna od 00:00 do 20:00 spowodowane jest to pracami nad ulepszeniem strony, prosmy ręcznie wypisywać raporty! Przepraszam za problem ale będzie mocna przebudowa :)");
   }
 }
 
@@ -242,11 +220,6 @@ async function kopiuj() {
         alert("Twoja przeglądarka nie obsługuje kopiowania obrazów");
     }
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    alert("Informuję że w dniu 16.04.2026r. strona będzie niedostępna od 00:00 do 20:00 spowodowane jest to pracami nad ulepszeniem strony, prosmy ręcznie wypisywać raporty! Przepraszam za problem ale będzie mocna przebudowa :)");
-});
-
 
 function generuj() {
     const canvas = document.getElementById("canvas");
