@@ -330,5 +330,5 @@ async function saveSignature() {
                 alert("Clipboard nie działa na tym hostingu");
             }
         });
-    }, 750); 
+    }, 800); 
 }
