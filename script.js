@@ -311,24 +311,22 @@ async function saveSignature() {
     signatureData = sigCanvas.toDataURL("image/png");
     document.getElementById("signatureModal").style.display = "none";
 
-    await generujCanvas();
+    generujCanvas();
 
-    setTimeout(() => {
-        const canvas = document.getElementById("canvas");
+    // 🔥 czekamy aż canvas się faktycznie odświeży
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            const canvas = document.getElementById("canvas");
 
-        canvas.toBlob(async (blob) => {
-            if (!blob) return;
+            canvas.toBlob(async (blob) => {
+                if (!blob) return;
 
-            try {
                 await navigator.clipboard.write([
                     new ClipboardItem({ "image/png": blob })
                 ]);
 
-                alert("Raport gotowy i skopiowany");
-            } catch (e) {
-                console.log(e);
-                alert("Clipboard nie działa na tym hostingu");
-            }
+                alert("Raport gotowy i skopiowany do schowka!");
+            });
         });
-    }, 800); 
+    });
 }
