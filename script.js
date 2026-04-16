@@ -269,6 +269,35 @@ sigCanvas.addEventListener("mouseleave", () => {
     sigCtx.beginPath();
 });
 
+sigCanvas.addEventListener("touchstart", (e) => {
+    drawing = true;
+
+    const rect = sigCanvas.getBoundingClientRect();
+    const x = e.touches[0].clientX - rect.left;
+    const y = e.touches[0].clientY - rect.top;
+
+    sigCtx.beginPath();
+    sigCtx.moveTo(x, y);
+});
+
+sigCanvas.addEventListener("touchmove", (e) => {
+    if (!drawing) return;
+
+    e.preventDefault();
+
+    const rect = sigCanvas.getBoundingClientRect();
+    const x = e.touches[0].clientX - rect.left;
+    const y = e.touches[0].clientY - rect.top;
+
+    sigCtx.lineTo(x, y);
+    sigCtx.stroke();
+});
+
+sigCanvas.addEventListener("touchend", () => {
+    drawing = false;
+    sigCtx.beginPath();
+});
+
 function clearSignature() {
     sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
 }
@@ -284,7 +313,6 @@ async function saveSignature() {
 
     await generujCanvas();
 
-    // czekamy aż canvas "dojdzie do siebie"
     setTimeout(() => {
         const canvas = document.getElementById("canvas");
 
@@ -302,5 +330,5 @@ async function saveSignature() {
                 alert("Clipboard nie działa na tym hostingu");
             }
         });
-    }, 800); // 👈 TO JEST KLUCZ
+    }, 750); 
 }
