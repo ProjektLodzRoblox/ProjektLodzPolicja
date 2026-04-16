@@ -282,19 +282,25 @@ async function saveSignature() {
     signatureData = sigCanvas.toDataURL("image/png");
     document.getElementById("signatureModal").style.display = "none";
 
-    generujCanvas();
+    await generujCanvas();
 
+    // czekamy aż canvas "dojdzie do siebie"
     setTimeout(() => {
         const canvas = document.getElementById("canvas");
 
         canvas.toBlob(async (blob) => {
             if (!blob) return;
 
-            await navigator.clipboard.write([
-                new ClipboardItem({ "image/png": blob })
-            ]);
+            try {
+                await navigator.clipboard.write([
+                    new ClipboardItem({ "image/png": blob })
+                ]);
 
-            alert("Raport gotowy i skopiowany do schowka!");
+                alert("Raport gotowy i skopiowany");
+            } catch (e) {
+                console.log(e);
+                alert("Clipboard nie działa na tym hostingu");
+            }
         });
-    }, 500);
+    }, 800); // 👈 TO JEST KLUCZ
 }
