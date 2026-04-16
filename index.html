@@ -1,48 +1,24 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
-<meta charset="UTF-8">
-<link rel="icon" href="favicon.ico" type="image/x-icon">
-<title>Generator raportu</title>
-
-<style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: #0f172a;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-#maintenance p {
-    margin: 2px 0;
-    font-size: 16px;
-    color: #9ca3af;
-}
-
-#maintenance h2 {
-    margin: 0;
-    font-size: 32px;
-}
-</style>
+  <meta charset="UTF-8">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <title>Generator raportu</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="container">
-<h2>🚔 Generator raportu</h2>
+  <div class="container">
+    <h2>🚔 Generator raportu</h2>
 
-<div class="grid">
-    <div id="maintenance" style="
+    <!--<div id="changelogIcon" onclick="openChangelog()" style="cursor:pointer;color:white;">
+      📜 Dziennik zmian
+    </div> -->
+
+    <div class="grid">
+      <div id="maintenance" style="
 display:none;
 position:fixed;
 top:0;
@@ -58,202 +34,129 @@ flex-direction:column;
 font-size:22px;
 text-align:center;
 ">
-  <h1>🚧 Przerwa techniczna. Trwa przebudowa strony!</h1>
-  <h1>Na ten czas proszę o ręczne wypisywanie raportów na kanale discord!</h1>
-  <p>Strona wróci za:</p>
-  <h2 id="timer"></h2>
-</div>
-</div>
-</div>
+        <h1>🚧 Przerwa techniczna. Trwa przebudowa strony!</h1>
+        <h1>Na ten czas proszę o ręczne wypisywanie raportów na kanale discord!</h1>
+        <p>Strona wróci za:</p>
+        <h2 id="timer"></h2>
+      </div>
+      <div id="signatureModal" style="
+display:none;
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:rgba(0,0,0,0.8);
+z-index:10000;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+">
 
-<script>
-const start = new Date("2026-04-16T00:00:00");
-const end   = new Date("2026-04-16T22:00:00");
+        <div
+          style="background:#111827;padding:20px;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:12px;">
 
-const maintenanceDiv = document.getElementById("maintenance");
-const timer = document.getElementById("timer");
+          <h3 style="color:white;text-align:center;margin:0;">
+            Proszę się podpisać (Parafka lub Imię i Nazwisko)
+          </h3>
 
-function updateMaintenance() {
-  const now = new Date();
+          <canvas id="signatureCanvas" width="400" height="150"
+            style="background:#26324d;border-radius:8px;display:block;">
+          </canvas>
 
-  if (now >= start && now <= end) {
-    maintenanceDiv.style.display = "flex";
+          <div style="display:flex;gap:10px;">
+            <button onclick="clearSignature()">Wyczyść</button>
+            <button onclick="saveSignature()">Zapisz</button>
+          </div>
 
-    const diff = end - now;
+        </div>
 
-    const h = Math.floor(diff / 1000 / 60 / 60);
-    const m = Math.floor((diff / 1000 / 60) % 60);
-    const s = Math.floor((diff / 1000) % 60);
+      </div>
+      <input id="nick" placeholder="Nick">
+      <input id="stopien" placeholder="Stopień">
+      <input id="odznaka" placeholder="Nr odznaki" maxlength="5">
+      <input id="radio" placeholder="Radio (DC)">
+      <input id="taser" placeholder="Taser">
+      <input id="powodTaser" placeholder="Powód tasera">
+      <input id="bron" placeholder="Broń palna">
+      <input id="powodBron" placeholder="Powód broni">
+      <input id="kajdanki" placeholder="Kajdanki">
+      <input id="powodKajdanki" placeholder="Powód kajdanek">
+      <input id="partner" placeholder="Partner">
+      <input id="pojazd" placeholder="Pojazd">
+      <input id="godziny" placeholder="Godziny">
+      <input id="zatrzymani" placeholder="Zatrzymani" maxlength="10">
+      <input id="dowod" placeholder="Dowód w postaci ss (TAK/NIE)">
+      <input id="uwagi" placeholder="Uwagi (jeśli nie ma zostaw puste)">
+    </div>
 
-    timer.innerText = `${h}h ${m}m ${s}s`;
+    <div class="buttons">
+      <button class="generate" onclick="startRaport()">Generuj raport</button>
+    </div>
 
-  } else {
-    maintenanceDiv.style.display = "none";
-    alert("Informuję że w dniu 16.04.2026r. strona będzie niedostępna od 00:00 do 20:00 spowodowane jest to pracami nad ulepszeniem strony, prosmy ręcznie wypisywać raporty! Przepraszam za problem ale będzie mocna przebudowa :)");
-  }
-}
+    <canvas id="canvas" style="display: none;"></canvas>
+  </div>
 
-setInterval(updateMaintenance, 1000);
-updateMaintenance();
+  <footer class="footer">
+    <div class="footer-center">
+      <a href="https://discord.gg/JvZU3XTusK" target="_blank">© <span id="year"></span> Projekt Łódź</a>
+    </div>
+  </footer>
 
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) updateMaintenance();
-});
+  <script src="script.js"></script>
 
-function wrap(text, width) {
-    let result = [];
-    text = text || "";
+  <div id="changelogModal" style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.7);
+z-index:99999;
+justify-content:center;
+align-items:center;
+">
 
-    while (text.length > width) {
-        result.push(text.substring(0, width));
-        text = text.substring(width);
-    }
-    result.push(text);
-    return result;
-}
+    <div style="
+width:800px;
+height:500px;
+background:#111827;
+border-radius:12px;
+display:flex;
+overflow:hidden;
+color:white;
+position:relative;
+">
 
-function linia(label, value, width = 42) {
-    let lines = wrap(value, width);
-    let out = [];
+      <div onclick="closeChangelog()" style="
+position:absolute;
+top:10px;
+right:15px;
+cursor:pointer;
+color:white;
+font-size:18px;
+z-index:10;
+">
+        ✖
+      </div>
 
-    lines.forEach((line, i) => {
-        if (i === 0) {
-            let txt = (label + line).padEnd(width);
-            out.push(`│ ${txt} │`);
-        } else {
-            let txt = line.padEnd(width);
-            out.push(`│ ${txt} │`);
-        }
-    });
+      <div style="width:35%;background:#0b1220;padding:15px;overflow-y:auto;">
+        <h3 style="text-align:center;margin:10px 0;">Wersje</h3>
 
-    return out.join("\n");
-}
+        <div onclick="loadVersion('0.0.1')"
+          style="padding:10px;cursor:pointer;background:#1f2937;margin-bottom:5px;border-radius:6px;">
+          0.0.1 - Start
+        </div>
+      </div>
 
-async function kopiuj() {
-    try {
-        const canvas = document.getElementById("canvas");
+      <div style="width:65%;padding:20px;overflow-y:auto;">
+        <h3 id="versionTitle">Wybierz wersję</h3>
+        <pre id="versionContent" style="white-space:pre-wrap;color:#d1d5db;"></pre>
+      </div>
 
-        canvas.toBlob(async (blob) => {
-            if (!blob) {
-                alert("Błąd generowania obrazu");
-                return;
-            }
+    </div>
 
-            await navigator.clipboard.write([
-                new ClipboardItem({
-                    "image/png": blob
-                })
-            ]);
+  </div>
 
-            alert("Skopiowano raport do schowka");
-        });
+  </div>
 
-    } catch (err) {
-        console.error(err);
-        alert("Twoja przeglądarka nie obsługuje kopiowania obrazów");
-    }
-}
-
-function generuj() {
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    canvas.style.display = "";
-
-    const width = 900;
-    const height = 550;
-
-    canvas.width = width;
-    canvas.height = height;
-
-    // tło
-    ctx.fillStyle = "#0b1220";
-    ctx.fillRect(0, 0, width, height);
-
-    // header
-    ctx.fillStyle = "#111827";
-    roundRect(ctx, 20, 20, width - 40, 70, 12, true);
-
-    ctx.fillStyle = "#38bdf8";
-    ctx.font = "bold 26px Segoe UI";
-    ctx.fillText("🚔 RAPORT SŁUŻBY", 40, 65);
-
-    ctx.fillStyle = "#9ca3af";
-    ctx.font = "14px Segoe UI";
-    ctx.fillText(new Date().toLocaleDateString("pl-PL"), width - 150, 65);
-
-    // kolumny
-    drawSection("FUNKCJONARIUSZ", 20, 110, 420, [
-        ["Nick", nick.value],
-        ["Stopień", stopien.value],
-        ["Nr odznaki", odznaka.value],
-        ["Partner", partner.value]
-    ]);
-
-    drawSection("UŻYCIE", 460, 110, 420, [
-        ["Radio", radio.value],
-        ["Taser", taser.value],
-        ["Broń palna", bron.value],
-        ["Kajdanki", kajdanki.value]
-    ]);
-
-    drawSection("SZCZEGÓŁY", 20, 280, 860, [
-        ["Powód tasera", powodTaser.value],
-        ["Powód broni", powodBron.value],
-        ["Powód kajdanek", powodKajdanki.value]
-    ]);
-
-    drawSection("PODSUMOWANIE", 20, 400, 860, [
-        ["Godziny", godziny.value],
-        ["Zatrzymani", zatrzymani.value],
-        ["Dowód (w postaci ss)", dowod.value],
-        ["Uwagi", uwagi.value]
-    ]);
-
-    function drawSection(title, x, y, w, fields) {
-        // box
-        ctx.fillStyle = "#111827";
-        roundRect(ctx, x, y, w, 140, 10, true);
-
-        // title
-        ctx.fillStyle = "#38bdf8";
-        ctx.font = "bold 14px Segoe UI";
-        ctx.fillText(title, x + 15, y + 25);
-
-        // divider
-        ctx.fillStyle = "#1f2937";
-        ctx.fillRect(x + 15, y + 35, w - 30, 1);
-
-        let offsetY = y + 60;
-
-        fields.forEach(f => {
-            ctx.fillStyle = "#9ca3af";
-            ctx.font = "12px Segoe UI";
-            ctx.fillText(f[0], x + 15, offsetY);
-
-            ctx.fillStyle = "#e5e7eb";
-            ctx.font = "12px Consolas";
-            ctx.fillText(f[1] || "-", x + 150, offsetY);
-
-            offsetY += 25;
-        });
-    }
-}
-
-function roundRect(ctx, x, y, w, h, r, fill) {
-    ctx.beginPath();
-    ctx.moveTo(x+r,y);
-    ctx.lineTo(x+w-r,y);
-    ctx.quadraticCurveTo(x+w,y,x+w,y+r);
-    ctx.lineTo(x+w,y+h-r);
-    ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-    ctx.lineTo(x+r,y+h);
-    ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-    ctx.lineTo(x,y+r);
-    ctx.quadraticCurveTo(x,y,x+r,y);
-    ctx.closePath();
-    if(fill) ctx.fill();
-}
-</script>
-
+  </div>
 </body>
+
 </html>

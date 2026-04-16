@@ -1,0 +1,156 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    height: 100%;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    position: relative;
+    padding-bottom: 45px;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: -20px;
+
+    background: url("background.jpg") no-repeat center center;
+    background-size: cover;
+
+    filter: blur(3px) brightness(0.6);
+    z-index: -2;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: -1;
+}
+
+.container {
+    margin: 20px auto;
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 15px;
+    width: min(900px, 95%);
+    max-width: 900px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    overflow: hidden;
+}
+
+/* CANVAS */
+canvas {
+    max-width: 100%;
+    display: block;
+    margin-top: 10px;
+}
+
+/* TEXT */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #38bdf8;
+}
+
+/* INPUT GRID */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+input {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background: #0f172a;
+    color: white;
+}
+
+input::placeholder {
+    color: #64748b;
+}
+
+/* BUTTONS */
+.buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.generate {
+    background: #22c55e;
+}
+
+.copy {
+    background: #3b82f6;
+}
+
+button:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* MAINTENANCE */
+#maintenance p {
+    margin: 2px 0;
+    font-size: 16px;
+    color: #9ca3af;
+}
+
+#maintenance h2 {
+    margin: 0;
+    font-size: 32px;
+}
+
+/* FOOTER FIXED */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #020617;
+    border-top: 1px solid #1f2937;
+    padding: 15px 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer-center {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.footer a {
+    color: #38bdf8;
+    text-decoration: none;
+    margin-left: 15px;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.footer a:hover {
+    opacity: 1;
+}
