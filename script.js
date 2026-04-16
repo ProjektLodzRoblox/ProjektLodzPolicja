@@ -8,7 +8,7 @@ const timer = document.getElementById("timer");
 function updateMaintenance() {
     const now = new Date();
 
-    if (now >= start && now <= end) {
+    if (now >= start && now <= end && isService) {
         maintenanceDiv.style.display = "flex";
 
         const diff = end - now;
@@ -94,8 +94,10 @@ async function startRaport() {
     openSignature();
 }
 
+let canvasReady = false;
 
-function generujCanvas() {
+
+async function generujCanvas() {
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     canvas.style.display = "";
@@ -106,11 +108,9 @@ function generujCanvas() {
     canvas.width = width;
     canvas.height = height;
 
-    // tło
     ctx.fillStyle = "#0b1220";
     ctx.fillRect(0, 0, width, height);
 
-    // header
     ctx.fillStyle = "#111827";
     roundRect(ctx, 20, 20, width - 40, 70, 12, true);
 
@@ -122,7 +122,6 @@ function generujCanvas() {
     ctx.font = "14px Segoe UI";
     ctx.fillText(new Date().toLocaleDateString("pl-PL"), width - 150, 65);
 
-    // kolumny
     drawSection("FUNKCJONARIUSZ", 20, 110, 420, [
         ["Nick", nick.value],
         ["Stopień", stopien.value],
@@ -151,16 +150,13 @@ function generujCanvas() {
     ]);
 
     function drawSection(title, x, y, w, fields) {
-        // box
         ctx.fillStyle = "#111827";
         roundRect(ctx, x, y, w, 140, 10, true);
 
-        // title
         ctx.fillStyle = "#38bdf8";
         ctx.font = "bold 14px Segoe UI";
         ctx.fillText(title, x + 15, y + 25);
 
-        // divider
         ctx.fillStyle = "#1f2937";
         ctx.fillRect(x + 15, y + 35, w - 30, 1);
 
@@ -185,29 +181,31 @@ function generujCanvas() {
             const boxWidth = 200;
             const boxHeight = 60;
 
-            const x = width - boxWidth - 40;   // odstęp od prawej
-            const y = height - boxHeight - 10;
+            const x = width - boxWidth - 40;
+            const y = height - boxHeight - 25;
 
-            // tekst
-            const text = "Podpisano:";
+            ctx.fillStyle = "#9ca3af";
             ctx.font = "12px Segoe UI";
+
+            const text = "Podpisano:";
             const textWidth = ctx.measureText(text).width;
 
             ctx.fillText(text, x + (boxWidth - textWidth) / 2, y);
 
-            // linia
             ctx.strokeStyle = "#9ca3af";
             ctx.beginPath();
             ctx.moveTo(x, y + 8);
             ctx.lineTo(x + boxWidth, y + 8);
             ctx.stroke();
 
-            // podpis
             ctx.drawImage(img, x, y + 12, boxWidth, boxHeight);
+
+            canvasReady = true;
         };
 
         img.src = signatureData;
     }
+    canvasReady = false;
 }
 
 function roundRect(ctx, x, y, w, h, r, fill) {
@@ -280,12 +278,13 @@ function openSignature() {
     sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
 }
 
-function saveSignature() {
+async function saveSignature() {
     signatureData = sigCanvas.toDataURL("image/png");
     document.getElementById("signatureModal").style.display = "none";
-    setTimeout(async () => {
-        generujCanvas();
 
+    generujCanvas();
+
+    setTimeout(() => {
         const canvas = document.getElementById("canvas");
 
         canvas.toBlob(async (blob) => {
@@ -297,6 +296,5 @@ function saveSignature() {
 
             alert("Raport gotowy i skopiowany do schowka!");
         });
-
-    }, 100);
+    }, 300);
 }
