@@ -296,5 +296,5 @@ async function saveSignature() {
 
             alert("Raport gotowy i skopiowany do schowka!");
         });
-    }, 300);
+    }, 500);
 }
