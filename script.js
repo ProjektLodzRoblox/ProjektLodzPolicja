@@ -8,7 +8,7 @@ const timer = document.getElementById("timer");
 function updateMaintenance() {
     const now = new Date();
 
-    if (now >= start && now <= end && isService) {
+    if (now >= start && now <= end) {
         maintenanceDiv.style.display = "flex";
 
         const diff = end - now;
