@@ -330,3 +330,7 @@ async function saveSignature() {
         });
     });
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+  alert("UWAGA! Użytkownicy mobilni mogą doświadczyć błędnie bądź wogóle generowania podpisu na raporcie jest to spowodowane ograniczeniami na urzadzenia mobilne, na pc działa normalnie, dlatego do czasu naprawy proszę się nie zdziwić jak na raporcie nie bedzie pojawiać sie podpis!");
+});
