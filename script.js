@@ -98,114 +98,181 @@ let canvasReady = false;
 
 
 async function generujCanvas() {
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    canvas.style.display = "";
+    return new Promise((resolve) => {
 
-    const width = 900;
-    const height = 560;
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.style.display = "";
 
-    canvas.width = width;
-    canvas.height = height;
+        const width = 900;
+        const height = 560;
 
-    ctx.fillStyle = "#0b1220";
-    ctx.fillRect(0, 0, width, height);
+        canvas.width = width;
+        canvas.height = height;
 
-    ctx.fillStyle = "#111827";
-    roundRect(ctx, 20, 20, width - 40, 70, 12, true);
+        ctx.fillStyle = "#0b1220";
+        ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = "#38bdf8";
-    ctx.font = "bold 26px Segoe UI";
-    ctx.fillText("🚔 RAPORT SŁUŻBY", 40, 65);
-
-    ctx.fillStyle = "#9ca3af";
-    ctx.font = "14px Segoe UI";
-    ctx.fillText(new Date().toLocaleDateString("pl-PL"), width - 150, 65);
-
-    drawSection("FUNKCJONARIUSZ", 20, 110, 420, [
-        ["Nick", nick.value],
-        ["Stopień", stopien.value],
-        ["Nr odznaki", odznaka.value],
-        ["Partner", partner.value]
-    ]);
-
-    drawSection("UŻYCIE", 460, 110, 420, [
-        ["Radio", radio.value],
-        ["Taser", taser.value],
-        ["Broń palna", bron.value],
-        ["Kajdanki", kajdanki.value]
-    ]);
-
-    drawSection("SZCZEGÓŁY", 20, 280, 860, [
-        ["Powód tasera", powodTaser.value],
-        ["Powód broni", powodBron.value],
-        ["Powód kajdanek", powodKajdanki.value]
-    ]);
-
-    drawSection("PODSUMOWANIE", 20, 400, 860, [
-        ["Godziny", godziny.value],
-        ["Zatrzymani", zatrzymani.value],
-        ["Dowód (w postaci ss)", dowod.value],
-        ["Uwagi", uwagi.value]
-    ]);
-
-    function drawSection(title, x, y, w, fields) {
         ctx.fillStyle = "#111827";
-        roundRect(ctx, x, y, w, 140, 10, true);
+        roundRect(ctx, 20, 20, width - 40, 70, 12, true);
 
         ctx.fillStyle = "#38bdf8";
-        ctx.font = "bold 14px Segoe UI";
-        ctx.fillText(title, x + 15, y + 25);
+        ctx.font = "bold 26px Segoe UI";
+        ctx.fillText("🚔 RAPORT SŁUŻBY", 40, 65);
 
-        ctx.fillStyle = "#1f2937";
-        ctx.fillRect(x + 15, y + 35, w - 30, 1);
+        ctx.fillStyle = "#9ca3af";
+        ctx.font = "14px Segoe UI";
+        ctx.fillText(new Date().toLocaleDateString("pl-PL"), width - 150, 65);
 
-        let offsetY = y + 60;
+        drawSection("FUNKCJONARIUSZ", 20, 110, 420, [
+            ["Nick", nick.value],
+            ["Stopień", stopien.value],
+            ["Nr odznaki", odznaka.value],
+            ["Partner", partner.value]
+        ]);
 
-        fields.forEach(f => {
-            ctx.fillStyle = "#9ca3af";
-            ctx.font = "12px Segoe UI";
-            ctx.fillText(f[0], x + 15, offsetY);
+        drawSection("UŻYCIE", 460, 110, 420, [
+            ["Radio", radio.value],
+            ["Taser", taser.value],
+            ["Broń palna", bron.value],
+            ["Kajdanki", kajdanki.value]
+        ]);
 
-            ctx.fillStyle = "#e5e7eb";
-            ctx.font = "12px Consolas";
-            ctx.fillText(f[1] || "-", x + 150, offsetY);
+        drawSection("SZCZEGÓŁY", 20, 280, 860, [
+            ["Powód tasera", powodTaser.value],
+            ["Powód broni", powodBron.value],
+            ["Powód kajdanek", powodKajdanki.value]
+        ]);
 
-            offsetY += 25;
-        });
-    }
-    if (signatureData) {
-        const img = new Image();
+        drawSection("PODSUMOWANIE", 20, 400, 860, [
+            ["Godziny", godziny.value],
+            ["Zatrzymani", zatrzymani.value],
+            ["Dowód (w postaci ss)", dowod.value],
+            ["Uwagi", uwagi.value]
+        ]);
 
-        img.onload = () => {
-            const boxWidth = 200;
-            const boxHeight = 60;
+        function drawSection(title, x, y, w, fields) {
+            ctx.fillStyle = "#111827";
+            roundRect(ctx, x, y, w, 140, 10, true);
 
-            const x = width - boxWidth - 40;
-            const y = height - boxHeight - 25;
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = "bold 14px Segoe UI";
+            ctx.fillText(title, x + 15, y + 25);
 
-            ctx.fillStyle = "#9ca3af";
-            ctx.font = "12px Segoe UI";
+            ctx.fillStyle = "#1f2937";
+            ctx.fillRect(x + 15, y + 35, w - 30, 1);
 
-            const text = "Podpisano:";
-            const textWidth = ctx.measureText(text).width;
+            let offsetY = y + 60;
 
-            ctx.fillText(text, x + (boxWidth - textWidth) / 2, y);
+            fields.forEach(f => {
+                ctx.fillStyle = "#9ca3af";
+                ctx.font = "12px Segoe UI";
+                ctx.fillText(f[0], x + 15, offsetY);
 
-            ctx.strokeStyle = "#9ca3af";
-            ctx.beginPath();
-            ctx.moveTo(x, y + 8);
-            ctx.lineTo(x + boxWidth, y + 8);
-            ctx.stroke();
+                ctx.fillStyle = "#e5e7eb";
+                ctx.font = "12px Consolas";
+                ctx.fillText(f[1] || "-", x + 150, offsetY);
 
-            ctx.drawImage(img, x, y + 12, boxWidth, boxHeight);
+                offsetY += 25;
+            });
+        }
 
+        if (signatureData) {
+            const img = new Image();
+
+            img.onload = () => {
+                const boxWidth = 200;
+                const boxHeight = 60;
+
+                const x = width - boxWidth - 40;
+                const y = height - boxHeight - 25;
+
+                ctx.fillStyle = "#9ca3af";
+                ctx.font = "12px Segoe UI";
+
+                const text = "Podpisano:";
+                const textWidth = ctx.measureText(text).width;
+
+                ctx.fillText(text, x + (boxWidth - textWidth) / 2, y);
+
+                ctx.strokeStyle = "#9ca3af";
+                ctx.beginPath();
+                ctx.moveTo(x, y + 8);
+                ctx.lineTo(x + boxWidth, y + 8);
+                ctx.stroke();
+
+                ctx.drawImage(img, x, y + 12, boxWidth, boxHeight);
+
+                ctx.save();
+
+                const offsetX = (Math.random() * 20) - 10;
+                const offsetY = (Math.random() * 20) - 10;
+                const randomRot = (-0.25 + Math.random() * 0.5);
+
+                const centerX = x - 5 + offsetX;
+                const centerY = y + 15 + offsetY;
+
+                const radius = 45;
+
+                ctx.translate(centerX, centerY);
+                ctx.rotate(randomRot);
+
+                ctx.strokeStyle = "rgba(180,0,0,0.85)";
+                ctx.fillStyle = "rgba(180,0,0,0.85)";
+                ctx.lineWidth = 1.5;
+
+                ctx.beginPath();
+                ctx.arc(0, 0, radius, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(0, 0, radius - 6, 0, Math.PI * 2);
+                ctx.stroke();
+
+                function textOnArc(text, r, startAngle, spacing = 0.06) {
+                    ctx.save();
+                    ctx.rotate(startAngle - (text.length * spacing) / 2);
+
+                    for (let i = 0; i < text.length; i++) {
+                        ctx.save();
+                        ctx.rotate(i * spacing);
+                        ctx.translate(0, -r);
+                        ctx.fillText(text[i], 0, 0);
+                        ctx.restore();
+                    }
+
+                    ctx.restore();
+                }
+
+                ctx.font = "bold 8px Arial";
+                textOnArc("KOMENDA POWIATOWA POLICJI W ŁODZI", radius - 8, -Math.PI / 2);
+
+                textOnArc("POLICJA", radius - 8, Math.PI / 2);
+
+                ctx.textAlign = "center";
+
+                ctx.font = "bold 11px Arial";
+                ctx.fillText(stopien.value || "STOPIEŃ", 0, -3);
+
+                ctx.font = "10px Arial";
+                ctx.fillText(nick.value || "NICK", 0, 10);
+
+                ctx.font = "9px Arial";
+                ctx.fillText("NR " + (odznaka.value || "00000"), 0, 22);
+
+                ctx.restore();
+
+                canvasReady = true;
+                resolve();
+            };
+
+            img.src = signatureData;
+
+        } else {
             canvasReady = true;
-        };
-
-        img.src = signatureData;
-    }
-    canvasReady = false;
+            resolve();
+        }
+    });
 }
 
 function roundRect(ctx, x, y, w, h, r, fill) {
@@ -307,30 +374,80 @@ function openSignature() {
     sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
 }
 
+function showLoading() {
+    document.getElementById("loadingModal").style.display = "flex";
+}
+
+function hideLoading() {
+    document.getElementById("loadingModal").style.display = "none";
+}
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function setLoadingState(type, text) {
+    const icon = document.getElementById("loadingIcon");
+    const txt = document.querySelector(".loadingText");
+
+    txt.innerText = text;
+
+    if (type === "loading") {
+        icon.className = "spinner";
+        icon.innerHTML = "";
+    }
+
+    if (type === "success") {
+        icon.className = "successIcon";
+        icon.innerHTML = "✔";
+    }
+
+    if (type === "error") {
+        icon.className = "successIcon";
+        icon.style.color = "#ef4444";
+        icon.innerHTML = "✖";
+    }
+}
+
 async function saveSignature() {
     signatureData = sigCanvas.toDataURL("image/png");
     document.getElementById("signatureModal").style.display = "none";
 
-    generujCanvas();
+    showLoading();
+    setLoadingState("loading", "Trwa generowanie raportu...");
 
-    // 🔥 czekamy aż canvas się faktycznie odświeży
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            const canvas = document.getElementById("canvas");
+    const startTime = Date.now();
 
-            canvas.toBlob(async (blob) => {
-                if (!blob) return;
+    await generujCanvas();
 
-                await navigator.clipboard.write([
-                    new ClipboardItem({ "image/png": blob })
-                ]);
+    const elapsed = Date.now() - startTime;
+    const minTime = 1500;
 
-                alert("Raport gotowy i skopiowany do schowka!");
-            });
-        });
+    if (elapsed < minTime) {
+        await delay(minTime - elapsed);
+    }
+
+    const canvas = document.getElementById("canvas");
+
+    canvas.toBlob(async (blob) => {
+
+        if (!blob) {
+            setLoadingState("error", "Błąd generowania");
+            setTimeout(hideLoading, 1500);
+            return;
+        }
+
+        try {
+            await navigator.clipboard.write([
+                new ClipboardItem({ "image/png": blob })
+            ]);
+
+            setLoadingState("success", "Skopiowano do schowka!");
+
+        } catch {
+            setLoadingState("error", "Clipboard nie działa");
+        }
+
+        setTimeout(hideLoading, 1500);
     });
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-  alert("UWAGA! Użytkownicy mobilni mogą doświadczyć błędnie bądź wogóle generowania podpisu na raporcie jest to spowodowane ograniczeniami na urzadzenia mobilne, na pc działa normalnie, dlatego do czasu naprawy proszę się nie zdziwić jak na raporcie nie bedzie pojawiać sie podpis!");
-});
