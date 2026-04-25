@@ -1,6 +1,6 @@
 const start = new Date("2026-04-25T12:00:00");
 const end = new Date("2026-04-26T20:00:00");
-const isService = false;
+const isService = true;
 
 const maintenanceDiv = document.getElementById("maintenance");
 const timer = document.getElementById("timer");
