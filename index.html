@@ -56,68 +56,9 @@ justify-content:center;
 align-items:center;
 flex-direction:column;
 ">
-
-        <div
-          style="background:#111827;padding:20px;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:12px;">
-
-          <h3 style="color:white;text-align:center;margin:0;">
-            Proszę się podpisać (Parafka lub Imię i Nazwisko)
-          </h3>
-
-          <canvas id="signatureCanvas" width="400" height="150"
-            style="background:#26324d;border-radius:8px;display:block;">
-          </canvas>
-
-          <div style="display:flex;gap:10px;">
-            <button onclick="clearSignature()">Wyczyść</button>
-            <button onclick="saveSignature()">Zapisz</button>
-          </div>
-
-        </div>
-
-      </div>
-      <input id="nick" placeholder="Nick">
-      <input id="stopien" placeholder="Stopień">
-      <input id="odznaka" placeholder="Nr odznaki" maxlength="5">
-      <input id="radio" placeholder="Radio (DC)">
-      <input id="taser" placeholder="Taser">
-      <input id="powodTaser" placeholder="Powód tasera">
-      <input id="bron" placeholder="Broń palna">
-      <input id="powodBron" placeholder="Powód broni">
-      <input id="kajdanki" placeholder="Kajdanki">
-      <input id="powodKajdanki" placeholder="Powód kajdanek">
-      <input id="partner" placeholder="Partner">
-      <input id="pojazd" placeholder="Pojazd">
-      <input id="godziny" placeholder="Godziny">
-      <input id="zatrzymani" placeholder="Zatrzymani" maxlength="10">
-      <input id="dowod" placeholder="Dowód w postaci ss (TAK/NIE)">
-      <input id="uwagi" placeholder="Uwagi (jeśli nie ma zostaw puste)">
-    </div>
-
-    <div class="buttons">
-      <button class="generate" onclick="startRaport()">Generuj raport</button>
-    </div>
-
-    <canvas id="canvas" style="display: none;"></canvas>
   </div>
 
-  <footer class="footer">
-    <div class="footer-center">
-      <a href="https://discord.gg/JvZU3XTusK" target="_blank">© <span id="year"></span> Projekt Łódź</a>
-    </div>
-  </footer>
-
   <script src="script.js"></script>
-
-  <div id="changelogModal" style="
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,0.7);
-z-index:99999;
-justify-content:center;
-align-items:center;
-">
 
     <div style="
 width:800px;
