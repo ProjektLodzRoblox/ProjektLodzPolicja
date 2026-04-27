@@ -60,7 +60,6 @@ h2 {
     color: #38bdf8;
 }
 
-/* INPUT GRID */
 .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -103,6 +102,10 @@ input::placeholder {
 button:hover {
     transform: scale(1.02);
     opacity: 0.9;
+}
+
+#maintenance {
+    z-index: 10000;
 }
 
 #maintenance p {
@@ -215,7 +218,7 @@ button:hover {
   box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 
   transition: 0.2s;
-  z-index: 9999;
+  z-index: 500;
 }
 
 #changelogBtn:hover {

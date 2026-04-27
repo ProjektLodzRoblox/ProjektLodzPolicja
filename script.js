@@ -4,7 +4,7 @@ const changelog = [
         date: "28.04.2026",
         isNew: true,
         changes: {
-            added: ["Dodano opcje ręcznego oraz urposzczonego podpisu","Dodano dziennik zmian", "Dodano przycisk od wczytania ostatniego swojego podpisu",],
+            added: ["Dodano opcje ręcznego oraz urposzczonego podpisu", "Dodano dziennik zmian", "Dodano przycisk od wczytania ostatniego swojego podpisu",],
             fixed: ["Brak"],
             changed: ["Poprawiono lekko style przycisków"]
         }
@@ -389,6 +389,9 @@ function clearSignature() {
 function openSignature() {
     document.getElementById("signatureModal").style.display = "flex";
     updateLoadButton();
+    if (signatureMode === "text") {
+        generateTextSignature();
+    }
     sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
 }
 
@@ -581,6 +584,18 @@ function loadSavedSignature() {
 
 let signatureMode = "draw";
 
+function syncSignatureUI() {
+    const saved = localStorage.getItem("savedSignature");
+
+    const clearBtn = document.querySelector('button[onclick="clearSignature()"]');
+    const loadBtn = document.getElementById("loadSignatureBtn");
+
+    const isDraw = signatureMode === "draw";
+
+    if (clearBtn) clearBtn.style.display = isDraw ? "inline-block" : "none";
+    if (loadBtn) loadBtn.style.display = (saved && isDraw) ? "inline-block" : "none";
+}
+
 function setSignatureMode(mode, el) {
     signatureMode = mode;
 
@@ -599,26 +614,15 @@ function setSignatureMode(mode, el) {
         sigCanvas.style.opacity = "1";
     }, 150);
 
-    const clearBtn = document.querySelector('button[onclick="clearSignature()"]');
-    const loadBtn = document.getElementById("loadSignatureBtn");
-
-    if (mode === "draw") {
-        clearBtn.style.display = "inline-block";
-        if (loadBtn) loadBtn.style.display = "inline-block";
-    } else {
-        clearBtn.style.display = "none";
-        if (loadBtn) loadBtn.style.display = "none";
-    }
-
     const title = document.getElementById("signatureTitle");
 
     if (mode === "draw") {
         title.innerText = "Proszę się podpisać (Parafka lub Imię i Nazwisko)";
-    }
-
-    if (mode === "text") {
+    } else {
         title.innerText = "Podpis zostanie wygenerowany z Twojego nicku";
     }
+
+    syncSignatureUI();
 }
 
 function generateTextSignature() {
