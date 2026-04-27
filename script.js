@@ -447,7 +447,7 @@ function renderChangelog() {
                     <div class="version">v${v.version}</div>
                     <div class="versionDate">${v.date}</div>
                 </div>
-                ${v.isNew ? `<span class="badgeNew">NEW</span>` : ``}
+                ${v.isNew ? `<span class="badgeNew">NOWE</span>` : ``}
             </div>
         `;
 
@@ -597,6 +597,12 @@ function syncSignatureUI() {
 }
 
 function setSignatureMode(mode, el) {
+
+    if (mode === "text" && !nick.value.trim()) {
+        alert("Najpierw proszę o wpisanie swojego nicku.");
+        return;
+    }
+
     signatureMode = mode;
 
     document.querySelectorAll(".sigTab").forEach(t => t.classList.remove("active"));
