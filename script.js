@@ -1,6 +1,17 @@
-const start = new Date("2026-04-25T12:00:00");
+const changelog = [
+    {
+        version: "0.0.1",
+        date: "28.04.2026",
+        isNew: true,
+        changes: {
+            added: ["Dodano opcje ręcznego oraz urposzczonego podpisu","Dodano dziennik zmian", "Dodano przycisk od wczytania ostatniego swojego podpisu",],
+            fixed: ["Brak"],
+            changed: ["Poprawiono lekko style przycisków"]
+        }
+    }
+];
+const start = new Date("2026-04-26T00:00:00");
 const end = new Date("2026-04-27T20:00:00");
-const isService = true;
 
 const maintenanceDiv = document.getElementById("maintenance");
 const timer = document.getElementById("timer");
@@ -8,7 +19,7 @@ const timer = document.getElementById("timer");
 function updateMaintenance() {
     const now = new Date();
 
-    if (now >= start && now <= end && isService) {
+    if (now >= start && now <= end) {
         maintenanceDiv.style.display = "flex";
 
         const diff = end - now;
@@ -305,6 +316,8 @@ let lastX = 0;
 let lastY = 0;
 
 sigCanvas.addEventListener("mousedown", (e) => {
+    if (signatureMode !== "draw") return;
+
     drawing = true;
 
     const rect = sigCanvas.getBoundingClientRect();
@@ -316,6 +329,7 @@ sigCanvas.addEventListener("mousedown", (e) => {
 });
 
 sigCanvas.addEventListener("mousemove", (e) => {
+    if (signatureMode !== "draw") return;
     if (!drawing) return;
 
     const rect = sigCanvas.getBoundingClientRect();
@@ -337,6 +351,8 @@ sigCanvas.addEventListener("mouseleave", () => {
 });
 
 sigCanvas.addEventListener("touchstart", (e) => {
+    if (signatureMode !== "draw") return;
+
     drawing = true;
 
     const rect = sigCanvas.getBoundingClientRect();
@@ -348,6 +364,7 @@ sigCanvas.addEventListener("touchstart", (e) => {
 });
 
 sigCanvas.addEventListener("touchmove", (e) => {
+    if (signatureMode !== "draw") return;
     if (!drawing) return;
 
     e.preventDefault();
@@ -371,12 +388,136 @@ function clearSignature() {
 
 function openSignature() {
     document.getElementById("signatureModal").style.display = "flex";
+    updateLoadButton();
     sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+}
+
+function openChangelog() {
+    document.getElementById("changelogModal").classList.add("show");
+}
+
+function closeChangelog() {
+    document.getElementById("changelogModal").classList.remove("show");
 }
 
 function showLoading() {
     document.getElementById("loadingModal").style.display = "flex";
 }
+
+function loadVersion(v) {
+    document.getElementById("versionTitle").innerText = "Wersja " + v;
+
+    const content = document.getElementById("versionContent");
+
+    content.classList.remove("show");
+
+    setTimeout(() => {
+        content.innerText = changelog[v] || "Brak danych";
+        content.classList.add("show");
+    }, 100);
+
+    document.querySelectorAll(".versionItem").forEach(el => {
+        el.classList.remove("active");
+        if (el.innerText.includes(v)) {
+            el.classList.add("active");
+        }
+    });
+}
+
+function renderChangelog() {
+    const list = document.getElementById("versionList");
+    const content = document.getElementById("versionContent");
+
+    list.innerHTML = "";
+
+    const sorted = [...changelog].sort((a, b) =>
+        b.version.localeCompare(a.version, undefined, { numeric: true })
+    );
+
+    sorted.forEach((v, i) => {
+        const item = document.createElement("div");
+        item.classList.add("versionItem");
+
+        item.innerHTML = `
+            <div class="versionTop">
+                <div>
+                    <div class="version">v${v.version}</div>
+                    <div class="versionDate">${v.date}</div>
+                </div>
+                ${v.isNew ? `<span class="badgeNew">NEW</span>` : ``}
+            </div>
+        `;
+
+        item.onclick = () => {
+            localStorage.setItem("seenVersion", sorted[0].version);
+            updateChangelogDot();
+
+            document.querySelectorAll(".versionItem").forEach(el => {
+                el.classList.remove("active");
+            });
+
+            item.classList.add("active");
+
+            content.innerHTML = `
+                <div class="changelogContent">
+                    <div class="changelogHeader">
+                        <div class="ver">v${v.version}</div>
+                        <div class="date">${v.date}</div>
+                    </div>
+
+                   ${renderGroup("Dodano", v.changes.added, "added")}
+${renderGroup("Zmieniono", v.changes.changed, "changed")}
+${renderGroup("Naprawiono", v.changes.fixed, "fixed")}
+                </div>
+            `;
+        };
+
+        list.appendChild(item);
+
+        if (i === 0) item.click();
+    });
+}
+
+function renderGroup(title, arr, type) {
+    if (!arr || arr.length === 0) return "";
+
+    const icons = {
+        added: "+",
+        changed: "↻",
+        fixed: "✓"
+    };
+
+    return `
+    <div class="group ${type}">
+        <div class="groupTitle">
+            <span class="icon">${icons[type]}</span> ${title}
+        </div>
+        ${arr.map(c => `<div class="change">${c}</div>`).join("")}
+    </div>
+    `;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    renderChangelog();
+    updateChangelogDot();
+});
+
+const latestVersion = changelog[0].version;
+const seenVersion = localStorage.getItem("seenVersion");
+
+const dot = document.getElementById("newDot");
+
+function updateChangelogDot() {
+    const latestVersion = changelog[0].version;
+    const seenVersion = localStorage.getItem("seenVersion");
+
+    const dot = document.getElementById("newDot");
+    if (!dot) return;
+
+    dot.style.display = (seenVersion !== latestVersion) ? "block" : "none";
+}
+
+updateChangelogDot();
 
 function hideLoading() {
     document.getElementById("loadingModal").style.display = "none";
@@ -409,8 +550,105 @@ function setLoadingState(type, text) {
     }
 }
 
+function updateLoadButton() {
+    const saved = localStorage.getItem("savedSignature");
+    const btn = document.getElementById("loadSignatureBtn");
+
+    if (saved) {
+        btn.style.display = "inline-block";
+    } else {
+        btn.style.display = "none";
+    }
+}
+
+function loadSavedSignature() {
+    const saved = localStorage.getItem("savedSignature");
+
+    if (!saved) {
+        alert("Brak zapisanego podpisu");
+        return;
+    }
+
+    const img = new Image();
+
+    img.onload = () => {
+        sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+        sigCtx.drawImage(img, 0, 0, sigCanvas.width, sigCanvas.height);
+    };
+
+    img.src = saved;
+}
+
+let signatureMode = "draw";
+
+function setSignatureMode(mode, el) {
+    signatureMode = mode;
+
+    document.querySelectorAll(".sigTab").forEach(t => t.classList.remove("active"));
+    el.classList.add("active");
+
+    sigCanvas.style.opacity = "0";
+
+    setTimeout(() => {
+        if (mode === "draw") {
+            clearSignature();
+        } else {
+            generateTextSignature();
+        }
+
+        sigCanvas.style.opacity = "1";
+    }, 150);
+
+    const clearBtn = document.querySelector('button[onclick="clearSignature()"]');
+    const loadBtn = document.getElementById("loadSignatureBtn");
+
+    if (mode === "draw") {
+        clearBtn.style.display = "inline-block";
+        if (loadBtn) loadBtn.style.display = "inline-block";
+    } else {
+        clearBtn.style.display = "none";
+        if (loadBtn) loadBtn.style.display = "none";
+    }
+
+    const title = document.getElementById("signatureTitle");
+
+    if (mode === "draw") {
+        title.innerText = "Proszę się podpisać (Parafka lub Imię i Nazwisko)";
+    }
+
+    if (mode === "text") {
+        title.innerText = "Podpis zostanie wygenerowany z Twojego nicku";
+    }
+}
+
+function generateTextSignature() {
+    const text = document.getElementById("nick").value || "Podpis";
+
+    sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+
+    sigCtx.fillStyle = "white";
+    sigCtx.font = "42px 'Pacifico', cursive";
+
+    sigCtx.textAlign = "center";
+    sigCtx.textBaseline = "middle";
+
+    sigCtx.fillText(
+        text,
+        sigCanvas.width / 2,
+        sigCanvas.height / 2
+    );
+}
+
+document.getElementById("nick").addEventListener("input", () => {
+    if (signatureMode === "text") {
+        generateTextSignature();
+    }
+});
+
 async function saveSignature() {
     signatureData = sigCanvas.toDataURL("image/png");
+    localStorage.setItem("savedSignature", signatureData);
+    updateLoadButton();
     document.getElementById("signatureModal").style.display = "none";
 
     showLoading();
@@ -451,3 +689,173 @@ async function saveSignature() {
         setTimeout(hideLoading, 1500);
     });
 }
+
+const easterEggs = [
+    {
+        trigger: "matrix",
+        action: () => {
+            document.body.style.filter = "hue-rotate(90deg)";
+        }
+    },
+
+    {
+        trigger: "flip",
+        action: () => {
+            document.body.style.transform = "rotate(180deg)";
+        }
+    },
+
+    {
+        trigger: "rainbow",
+        action: () => {
+            let i = 0;
+            setInterval(() => {
+                document.body.style.filter = `hue-rotate(${i++}deg)`;
+            }, 50);
+        }
+    },
+
+    {
+        trigger: "lag",
+        action: () => {
+            setInterval(() => {
+                document.body.style.transform = `translate(${Math.random() * 10}px, ${Math.random() * 10}px)`;
+            }, 100);
+        }
+    },
+
+    {
+        trigger: "clean",
+        action: () => {
+            location.reload();
+        }
+    },
+
+    {
+        trigger: "druk",
+        action: () => {
+            document.body.style.filter = "grayscale(1)";
+        }
+    },
+
+    {
+        trigger: "retro",
+        action: () => {
+            document.body.style.fontFamily = "monospace";
+        }
+    },
+
+    {
+        trigger: "boom",
+        action: () => {
+            document.querySelectorAll("*").forEach(el => {
+                el.style.transform = `rotate(${Math.random() * 360}deg)`;
+            });
+        }
+    },
+
+    {
+        trigger: "cam",
+        action: () => {
+            const cam = document.createElement("div");
+
+            cam.style.position = "fixed";
+            cam.style.top = "10px";
+            cam.style.right = "10px";
+            cam.style.color = "lime";
+            cam.style.fontFamily = "monospace";
+
+            setInterval(() => {
+                cam.innerText = "REC " + new Date().toLocaleTimeString();
+            }, 1000);
+
+            document.body.appendChild(cam);
+        }
+    },
+
+    {
+        trigger: "ai",
+        action: () => {
+            document.body.innerHTML = "<h1 style='color:red;text-align:center;'>SYSTEM PRZEJĘTY</h1>";
+        }
+    },
+
+    {
+        trigger: "break",
+        action: () => {
+            document.querySelectorAll("*").forEach(el => {
+                el.style.transform = `translate(${Math.random() * 50}px, ${Math.random() * 50}px) rotate(${Math.random() * 20}deg)`;
+            });
+        }
+    },
+
+    {
+        trigger: "scan",
+        action: () => {
+            let percent = 0;
+
+            const scan = document.createElement("div");
+            scan.style = "position:fixed;bottom:10px;left:10px;color:white;background:#111;padding:10px";
+
+            document.body.appendChild(scan);
+
+            const interval = setInterval(() => {
+                percent += 10;
+                scan.innerText = "Skanowanie danych... " + percent + "%";
+
+                if (percent >= 100) {
+                    clearInterval(interval);
+                    scan.innerText = "Zakończono ✔";
+                }
+            }, 200);
+        }
+    }
+];
+
+let lastTrigger = "";
+
+nick.addEventListener("input", () => {
+    const value = nick.value.toLowerCase();
+
+    if (value === lastTrigger) return;
+
+    easterEggs.forEach(egg => {
+        if (value === egg.trigger) {
+            egg.action();
+            lastTrigger = value;
+        }
+    });
+});
+
+let corners = [];
+const target = ["TL", "BR", "BL", "TR"];
+const margin = 50;
+
+document.addEventListener("click", (e) => {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    let clicked = null;
+
+    if (e.clientX < margin && e.clientY < margin) clicked = "TL";
+    else if (e.clientX > w - margin && e.clientY < margin) clicked = "TR";
+    else if (e.clientX < margin && e.clientY > h - margin) clicked = "BL";
+    else if (e.clientX > w - margin && e.clientY > h - margin) clicked = "BR";
+
+    if (!clicked) return;
+
+    corners.push(clicked);
+
+    for (let i = 0; i < corners.length; i++) {
+        if (corners[i] !== target[i]) {
+            corners = [];
+            return;
+        }
+    }
+
+    if (corners.length === target.length) {
+        alert("Brawo odkryłeś easter egg!");
+        document.body.style.transform = "rotate(2deg)";
+        corners = [];
+    }
+});
