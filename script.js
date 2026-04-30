@@ -631,8 +631,12 @@ function setSignatureMode(mode, el) {
     syncSignatureUI();
 }
 
-function generateTextSignature() {
+document.fonts.load("42px Pacifico");
+
+async function generateTextSignature() {
     const text = document.getElementById("nick").value || "Podpis";
+
+    await document.fonts.load("42px Pacifico");
 
     sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
 
@@ -642,11 +646,7 @@ function generateTextSignature() {
     sigCtx.textAlign = "center";
     sigCtx.textBaseline = "middle";
 
-    sigCtx.fillText(
-        text,
-        sigCanvas.width / 2,
-        sigCanvas.height / 2
-    );
+    sigCtx.fillText(text, sigCanvas.width / 2, sigCanvas.height / 2);
 }
 
 document.getElementById("nick").addEventListener("input", () => {
