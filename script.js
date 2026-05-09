@@ -2,11 +2,21 @@ const changelog = [
     {
         version: "0.0.1",
         date: "28.04.2026",
-        isNew: true,
+        isNew: false,
         changes: {
             added: ["Dodano opcje ręcznego oraz urposzczonego podpisu", "Dodano dziennik zmian", "Dodano przycisk od wczytania ostatniego swojego podpisu",],
             fixed: ["Brak"],
             changed: ["Poprawiono lekko style przycisków"]
+        }
+    },
+        {
+        version: "0.0.2",
+        date: "09.05.2026",
+        isNew: true,
+        changes: {
+            added: ["Dodano ukrytą opcję 👀", "Dodano lekki efekt wciskania przycisku", "Dodano auto zapis pól po wyjściu z strony", "Dodano animacje pojawiania się elementów strony"],
+            fixed: ["Brak"],
+            changed: ["Poprawiono lekko tło", "Poprawiono pasek przewijania strony na własny"]
         }
     }
 ];
@@ -70,31 +80,6 @@ function linia(label, value, width = 42) {
     });
 
     return out.join("\n");
-}
-
-async function kopiuj() {
-    try {
-        const canvas = document.getElementById("canvas");
-
-        canvas.toBlob(async (blob) => {
-            if (!blob) {
-                alert("Błąd generowania obrazu");
-                return;
-            }
-
-            await navigator.clipboard.write([
-                new ClipboardItem({
-                    "image/png": blob
-                })
-            ]);
-
-            alert("Skopiowano raport do schowka");
-        });
-
-    } catch (err) {
-        console.error(err);
-        alert("Twoja przeglądarka nie obsługuje kopiowania obrazów");
-    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -700,143 +685,6 @@ async function saveSignature() {
     });
 }
 
-const easterEggs = [
-    {
-        trigger: "matrix",
-        action: () => {
-            document.body.style.filter = "hue-rotate(90deg)";
-        }
-    },
-
-    {
-        trigger: "flip",
-        action: () => {
-            document.body.style.transform = "rotate(180deg)";
-        }
-    },
-
-    {
-        trigger: "rainbow",
-        action: () => {
-            let i = 0;
-            setInterval(() => {
-                document.body.style.filter = `hue-rotate(${i++}deg)`;
-            }, 50);
-        }
-    },
-
-    {
-        trigger: "lag",
-        action: () => {
-            setInterval(() => {
-                document.body.style.transform = `translate(${Math.random() * 10}px, ${Math.random() * 10}px)`;
-            }, 100);
-        }
-    },
-
-    {
-        trigger: "clean",
-        action: () => {
-            location.reload();
-        }
-    },
-
-    {
-        trigger: "druk",
-        action: () => {
-            document.body.style.filter = "grayscale(1)";
-        }
-    },
-
-    {
-        trigger: "retro",
-        action: () => {
-            document.body.style.fontFamily = "monospace";
-        }
-    },
-
-    {
-        trigger: "boom",
-        action: () => {
-            document.querySelectorAll("*").forEach(el => {
-                el.style.transform = `rotate(${Math.random() * 360}deg)`;
-            });
-        }
-    },
-
-    {
-        trigger: "cam",
-        action: () => {
-            const cam = document.createElement("div");
-
-            cam.style.position = "fixed";
-            cam.style.top = "10px";
-            cam.style.right = "10px";
-            cam.style.color = "lime";
-            cam.style.fontFamily = "monospace";
-
-            setInterval(() => {
-                cam.innerText = "REC " + new Date().toLocaleTimeString();
-            }, 1000);
-
-            document.body.appendChild(cam);
-        }
-    },
-
-    {
-        trigger: "ai",
-        action: () => {
-            document.body.innerHTML = "<h1 style='color:red;text-align:center;'>SYSTEM PRZEJĘTY</h1>";
-        }
-    },
-
-    {
-        trigger: "break",
-        action: () => {
-            document.querySelectorAll("*").forEach(el => {
-                el.style.transform = `translate(${Math.random() * 50}px, ${Math.random() * 50}px) rotate(${Math.random() * 20}deg)`;
-            });
-        }
-    },
-
-    {
-        trigger: "scan",
-        action: () => {
-            let percent = 0;
-
-            const scan = document.createElement("div");
-            scan.style = "position:fixed;bottom:10px;left:10px;color:white;background:#111;padding:10px";
-
-            document.body.appendChild(scan);
-
-            const interval = setInterval(() => {
-                percent += 10;
-                scan.innerText = "Skanowanie danych... " + percent + "%";
-
-                if (percent >= 100) {
-                    clearInterval(interval);
-                    scan.innerText = "Zakończono ✔";
-                }
-            }, 200);
-        }
-    }
-];
-
-let lastTrigger = "";
-
-nick.addEventListener("input", () => {
-    const value = nick.value.toLowerCase();
-
-    if (value === lastTrigger) return;
-
-    easterEggs.forEach(egg => {
-        if (value === egg.trigger) {
-            egg.action();
-            lastTrigger = value;
-        }
-    });
-});
-
 let corners = [];
 const target = ["TL", "BR", "BL", "TR"];
 const margin = 50;
@@ -868,4 +716,450 @@ document.addEventListener("click", (e) => {
         document.body.style.transform = "rotate(2deg)";
         corners = [];
     }
+});
+
+document.querySelectorAll("input").forEach(input => {
+    input.value = localStorage.getItem(input.id) || "";
+
+    input.addEventListener("input", () => {
+        localStorage.setItem(input.id, input.value);
+    });
+});
+
+document.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", e => {
+        const ripple = document.createElement("span");
+        ripple.style.position = "absolute";
+        ripple.style.borderRadius = "50%";
+        ripple.style.transform = "scale(0)";
+        ripple.style.background = "rgba(255,255,255,0.4)";
+        ripple.style.width = ripple.style.height = "100px";
+        ripple.style.left = e.offsetX - 50 + "px";
+        ripple.style.top = e.offsetY - 50 + "px";
+        ripple.style.animation = "ripple 0.6s linear";
+        ripple.style.pointerEvents = "none";
+
+        btn.style.position = "relative";
+        btn.style.overflow = "hidden";
+        btn.appendChild(ripple);
+
+        setTimeout(() => ripple.remove(), 600);
+    });
+});
+
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.style.opacity = 1;
+            e.target.style.transform = "translateY(0)";
+        }
+    });
+});
+
+document.querySelectorAll(".grid input").forEach(el => {
+    el.style.opacity = 0;
+    el.style.transform = "translateY(10px)";
+    el.style.transition = "0.4s";
+
+    observer.observe(el);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const cmd = document.getElementById("cmdPalette");
+    const input = document.getElementById("cmdInput");
+    const list = document.getElementById("cmdList");
+
+    const actions = [
+        {
+            name: "🌀 Chaos mode",
+            tag: "fun",
+            run: () => {
+                setInterval(() => {
+                    document.body.style.transform = `
+                rotate(${Math.random() * 6 - 3}deg)
+                scale(${1 + Math.random() * 0.03})
+            `;
+                }, 120);
+            }
+        },
+
+        {
+            name: "🔄 Flip ekran",
+            tag: "fun",
+            run: () => {
+                document.body.style.transition = "1s";
+                document.body.style.transform = "rotate(180deg)";
+            }
+        },
+
+        {
+            name: "🙃 Mirror mode",
+            tag: "fun",
+            run: () => {
+                document.body.style.transform = "scaleX(-1)";
+            }
+        },
+
+        {
+            name: "💊 Matrix mode",
+            tag: "fun",
+            run: () => {
+                document.body.style.background = "black";
+
+                const rain = document.createElement("div");
+                rain.style = `
+            position:fixed;
+            inset:0;
+            color:#00ff00;
+            font-family:monospace;
+            font-size:14px;
+            pointer-events:none;
+            z-index:9999;
+            white-space:pre;
+        `;
+
+                setInterval(() => {
+                    rain.innerText += Math.random() > 0.5 ? "1" : "0";
+
+                    if (rain.innerText.length > 5000) {
+                        rain.innerText = "";
+                    }
+                }, 5);
+
+                document.body.appendChild(rain);
+            }
+        },
+
+        {
+            name: "🐟 Fish mode",
+            tag: "fun",
+            run: () => {
+                const fish = document.createElement("div");
+
+                fish.innerText = "🐟";
+                fish.style = `
+            position:fixed;
+            left:-100px;
+            top:50%;
+            font-size:80px;
+            z-index:9999;
+            transition:12s linear;
+        `;
+
+                document.body.appendChild(fish);
+
+                setTimeout(() => {
+                    fish.style.left = "120%";
+                }, 100);
+            }
+        },
+
+        {
+            name: "🧱 DVD logo",
+            tag: "fun",
+            run: () => {
+
+                const dvd = document.createElement("div");
+
+                dvd.innerText = "DVD";
+                dvd.style = `
+            position:fixed;
+            left:100px;
+            top:100px;
+            font-size:40px;
+            font-weight:bold;
+            color:white;
+            z-index:9999;
+        `;
+
+                document.body.appendChild(dvd);
+
+                let x = 100;
+                let y = 100;
+                let dx = 4;
+                let dy = 4;
+
+                setInterval(() => {
+
+                    x += dx;
+                    y += dy;
+
+                    if (x <= 0 || x >= window.innerWidth - 100) dx *= -1;
+                    if (y <= 0 || y >= window.innerHeight - 50) dy *= -1;
+
+                    dvd.style.left = x + "px";
+                    dvd.style.top = y + "px";
+
+                }, 16);
+            }
+        },
+
+        {
+            name: "🔥 Podpal stronę",
+            tag: "chaos",
+            run: () => {
+
+                for (let i = 0; i < 40; i++) {
+
+                    const fire = document.createElement("div");
+
+                    fire.innerText = "🔥";
+                    fire.style = `
+                position:fixed;
+                left:${Math.random() * 100}%;
+                bottom:-50px;
+                font-size:${40 + Math.random() * 60}px;
+                animation:fireFly 5s linear infinite;
+                pointer-events:none;
+            `;
+
+                    document.body.appendChild(fire);
+                }
+
+                const style = document.createElement("style");
+
+                style.innerHTML = `
+        @keyframes fireFly{
+            from{
+                transform:translateY(0);
+                opacity:1;
+            }
+            to{
+                transform:translateY(-120vh);
+                opacity:0;
+            }
+        }`;
+
+                document.head.appendChild(style);
+            }
+        },
+
+        {
+            name: "🫨 Trzęsienie strony",
+            tag: "chaos",
+            run: () => {
+                setInterval(() => {
+                    document.body.style.transform =
+                        `translate(${Math.random() * 20 - 10}px,${Math.random() * 20 - 10}px)`;
+                }, 40);
+            }
+        },
+
+        {
+            name: "🐸 Deszcz żab",
+            tag: "fun",
+            run: () => {
+
+                setInterval(() => {
+
+                    const frog = document.createElement("div");
+
+                    frog.innerText = "🐸";
+
+                    frog.style = `
+                position:fixed;
+                left:${Math.random() * 100}%;
+                top:-50px;
+                font-size:50px;
+                transition:4s linear;
+                z-index:9999;
+            `;
+
+                    document.body.appendChild(frog);
+
+                    setTimeout(() => {
+                        frog.style.top = "120%";
+                    }, 50);
+
+                    setTimeout(() => frog.remove(), 5000);
+
+                }, 200);
+            }
+        },
+
+        {
+            name: "📺 VHS mode",
+            tag: "fun",
+            run: () => {
+                document.body.style.filter = `
+            contrast(1.2)
+            saturate(0.8)
+            blur(0.3px)
+        `;
+
+                setInterval(() => {
+                    document.body.style.transform =
+                        `translateY(${Math.random() * 4 - 2}px)`;
+                }, 50);
+            }
+        },
+
+        {
+            name: "🎲 Demo mode",
+            tag: "demo",
+            run: () => {
+
+                const random = arr => arr[Math.floor(Math.random() * arr.length)];
+
+                const data = {
+                    nick: ["Kacper", "Mati", "Neo", "Kubix", "Szymix", "Marhub", "Matix"],
+                    stopien: ["Sierżant", "Aspirant", "Komisarz", "Posterunkowy"],
+                    odznaka: () => Math.floor(10000 + Math.random() * 90000),
+                    partner: ["Brak", "Olek", "Seba", "Kris", "Dawid"],
+
+                    radio: ["TAK", "NIE"],
+                    taser: ["0", "1", "2"],
+                    bron: ["0", "1"],
+                    kajdanki: ["1", "2", "3"],
+
+                    powodTaser: [
+                        "Agresywny obywatel",
+                        "Stawianie oporu",
+                        "Pościg pieszy",
+                        "Nie wykonywał poleceń"
+                    ],
+
+                    powodBron: [
+                        "Oddano strzał ostrzegawczy",
+                        "Zagrożenie życia",
+                        "Podejrzany posiadał broń",
+                        "Brak użycia"
+                    ],
+
+                    powodKajdanki: [
+                        "Zatrzymanie obywatela",
+                        "Zakłócanie porządku",
+                        "Pościg zakończony sukcesem"
+                    ],
+
+                    godziny: [
+                        "2h 15min",
+                        "5h 40min",
+                        "8h 10min"
+                    ],
+
+                    zatrzymani: [
+                        "2 osoby",
+                        "5 osób",
+                        "1 osoba",
+                        "0 osób"
+                    ],
+
+                    dowod: [
+                        "imgur.com/abc123",
+                        "streamable.com/test",
+                        "medal.tv/clip123"
+                    ],
+
+                    uwagi: [
+                        "Spokojna służba",
+                        "Dużo zgłoszeń",
+                        "Pościg zakończony sukcesem",
+                        "Obywatel próbował ucieczki"
+                    ]
+                };
+
+                Object.keys(data).forEach(id => {
+
+                    const el = document.getElementById(id);
+
+                    if (!el) return;
+
+                    const value =
+                        typeof data[id] === "function"
+                            ? data[id]()
+                            : random(data[id]);
+
+                    el.value = value;
+
+                    localStorage.setItem(id, value);
+
+                    el.dispatchEvent(new Event("input"));
+                });
+
+                // fancy typing effect
+                document.querySelectorAll("input").forEach((input, i) => {
+
+                    input.style.transition = "0.2s";
+                    input.style.transform = "scale(1.03)";
+                    input.style.boxShadow = "0 0 15px rgba(56,189,248,.6)";
+
+                    setTimeout(() => {
+                        input.style.transform = "scale(1)";
+                        input.style.boxShadow = "none";
+                    }, 300 + i * 20);
+                });
+
+            }
+        }
+    ];
+
+    function render(filter = "") {
+        list.innerHTML = "";
+
+        actions
+            .filter(a => a.name.toLowerCase().includes(filter.toLowerCase()))
+            .forEach((a, i) => {
+                const div = document.createElement("div");
+                div.className = "cmdItem";
+
+                let text = "";
+                let idx = 0;
+
+                const type = setInterval(() => {
+                    text += a.name[idx];
+                    div.innerText = text;
+                    idx++;
+
+                    if (idx >= a.name.length) clearInterval(type);
+                }, 10);
+
+                div.onclick = () => {
+                    a.run();
+                    hideCmd();
+                };
+
+                list.appendChild(div);
+            });
+    }
+
+    function showCmd() {
+        cmd.classList.remove("hidden");
+        input.value = "";
+        render();
+        input.focus();
+    }
+
+    function hideCmd() {
+        cmd.classList.add("hidden");
+    }
+
+    input.addEventListener("input", () => render(input.value));
+
+    document.addEventListener("keydown", e => {
+        if (e.ctrlKey && e.key.toLowerCase() === "k") {
+            e.preventDefault();
+            showCmd();
+        }
+
+        if (e.key === "Escape") {
+            hideCmd();
+        }
+
+        if (e.key === "Enter" && !cmd.classList.contains("hidden")) {
+            const first = document.querySelector(".cmdItem");
+            if (first) first.click();
+        }
+
+        if (e.key === "Tab") {
+            e.preventDefault();
+
+            const items = document.querySelectorAll(".cmdItem");
+            if (items.length > 0) {
+                items[0].click();
+            }
+        }
+    });
+
 });

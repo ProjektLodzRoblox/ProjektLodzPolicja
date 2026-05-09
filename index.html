@@ -12,6 +12,7 @@
 <body>
 
   <div class="container">
+    
     <h2>🚔 Generator raportu</h2>
 
     <div id="loadingModal">
@@ -135,6 +136,11 @@ flex-direction:column;
   </div>
 
   <div id="changelogBtn" onclick="openChangelog()">📜 <span id="newDot"></span></div>
+
+  <div id="cmdPalette" class="cmd hidden">
+  <input id="cmdInput" placeholder="Szukaj akcji..." />
+  <div id="cmdList"></div>
+</div>
 </body>
 
 </html>
